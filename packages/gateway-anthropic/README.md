@@ -1,5 +1,7 @@
 # @axemere/gateway-anthropic
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
+
 Drop-in Anthropic client factory for the [Axemere AI Gateway](https://axemere.ai).
 
 Returns a standard `Anthropic` instance pre-configured to route through the gateway. All existing Anthropic code works unchanged — the gateway adds cost controls, policy enforcement, and an append-only audit ledger to every call.

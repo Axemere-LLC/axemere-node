@@ -1,5 +1,7 @@
 # Axemere AI Gateway — TypeScript Examples
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../LICENSE)
+
 Ten example scripts covering the gateway's core capabilities. Each runs with `ts-node` against a local or managed gateway.
 
 ## Setup

@@ -1,5 +1,7 @@
 # @axemere/gateway
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](../../LICENSE)
+
 Framework-independent TypeScript client for the [Axemere AI Gateway](https://axemere.ai).
 
 Use this package when you want explicit control over every request, or when you are not using OpenAI or Anthropic SDKs directly. If you are already using one of those SDKs, install the matching wrapper instead (`@axemere/gateway-openai`, `@axemere/gateway-anthropic`) — it requires no code changes beyond the import.
