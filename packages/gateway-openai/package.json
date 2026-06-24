@@ -1,0 +1,18 @@
+{
+  "name": "@axemere/gateway-openai",
+  "version": "0.1.0",
+  "description": "Axemere AI Gateway SDK — OpenAI drop-in wrapper",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@axemere/gateway": "workspace:*",
+    "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  }
+}
