@@ -65,7 +65,7 @@ export class AiGatewayClient {
      * @param params - Request parameters: messages plus optional provider, model,
      *   attribution fields, delegation token, and provider-specific passthrough.
      * @returns The completed response, or a stream of chunks when `stream: true`.
-     * @throws {GatewayError} On missing config (gateway_url/provider/model),
+     * @throws {GatewayError} On missing config (provider/model),
      *   network failure, or non-OK gateway/provider status.
      * @throws {PolicyDeniedError} When the gateway denies the request by policy.
      * @throws {QuotaExceededError} When a spend/quota limit is exceeded (HTTP 429).
@@ -75,12 +75,6 @@ export class AiGatewayClient {
     execute(params: ExecuteParams & { stream: true }): Promise<AsyncIterable<StreamChunk>>;
     execute(params: ExecuteParams): Promise<ExecuteResponse | AsyncIterable<StreamChunk>>;
     async execute(params: ExecuteParams): Promise<ExecuteResponse | AsyncIterable<StreamChunk>> {
-        if (!this.config.gateway_url) {
-            throw new GatewayError(
-                "gateway_url is required; set AXEMERE_GATEWAY_URL or pass it to AiGatewayConfig",
-            );
-        }
-
         const provider = (params.provider as string | undefined) ?? this.config.default_provider;
         const model = (params.model as string | undefined) ?? this.config.default_model;
 

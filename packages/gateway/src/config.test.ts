@@ -1,6 +1,12 @@
 import { AiGatewayConfig } from "./config";
 
 describe("AiGatewayConfig", () => {
+    it("defaults gateway_url to http://localhost:7080 when no env or option is set", () => {
+        delete process.env["AXEMERE_GATEWAY_URL"];
+        const cfg = new AiGatewayConfig();
+        expect(cfg.gateway_url).toBe("http://localhost:7080");
+    });
+
     it("reads gateway_url from env", () => {
         process.env["AXEMERE_GATEWAY_URL"] = "http://localhost:7080";
         const cfg = new AiGatewayConfig();

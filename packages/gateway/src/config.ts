@@ -36,6 +36,10 @@ function parseLabelsEnv(raw: string): Record<string, string> {
  * safe default. Values are read once at construction time. Also builds the
  * proxy base URL used by the OpenAI/Anthropic drop-in wrappers.
  *
+ * `gateway_url` defaults to `"http://localhost:7080"` when neither the option
+ * nor `AXEMERE_GATEWAY_URL` is set, matching the Python SDK behaviour so local
+ * development works without any `.env` configuration.
+ *
  * @example
  * ```ts
  * // From env (AXEMERE_GATEWAY_URL, AXEMERE_GATEWAY_TOKEN, ...)
@@ -60,7 +64,7 @@ export class AiGatewayConfig {
     constructor(opts: AiGatewayOptions = {}) {
         // Constructor args take precedence over env vars (read at construction time).
         this.gateway_url =
-            opts.gateway_url ?? process.env["AXEMERE_GATEWAY_URL"] ?? "";
+            opts.gateway_url ?? process.env["AXEMERE_GATEWAY_URL"] ?? "http://localhost:7080";
         this.gateway_token =
             opts.gateway_token ?? process.env["AXEMERE_GATEWAY_TOKEN"] ?? "";
         this.default_provider =

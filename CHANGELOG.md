@@ -7,6 +7,9 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- `@axemere/gateway`: `AiGatewayConfig` now defaults `gateway_url` to `http://localhost:7080` when neither the option nor `AXEMERE_GATEWAY_URL` is set, matching the Python SDK so local development works without any environment configuration.
+
 ---
 
 ## [0.1.6] - 2026-06-25
