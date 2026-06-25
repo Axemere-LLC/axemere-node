@@ -4,6 +4,16 @@
   "description": "Axemere AI Gateway SDK — core client, config, and proxy URL builder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Axemere-LLC/axemere-node.git",
+    "directory": "packages/gateway"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"

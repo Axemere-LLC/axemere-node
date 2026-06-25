@@ -4,6 +4,16 @@
   "description": "Axemere AI Gateway SDK — OpenAI drop-in wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Axemere-LLC/axemere-node.git",
+    "directory": "packages/gateway-openai"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc"
   },
