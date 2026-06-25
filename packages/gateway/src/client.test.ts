@@ -250,7 +250,7 @@ describe("AiGatewayClient — wire request", () => {
             });
         });
 
-        const noTokenConfig = new AiGatewayConfig({ gateway_url: "http://localhost:7080" });
+        const noTokenConfig = new AiGatewayConfig({ gateway_url: "http://localhost:7080", gateway_token: "" });
         const client = new AiGatewayClient(noTokenConfig);
         await client.execute({
             messages: [{ role: "user", content: "hi" }],
@@ -258,6 +258,33 @@ describe("AiGatewayClient — wire request", () => {
             model: "gpt-4o",
         });
         expect(capturedHeaders["Authorization"]).toBeUndefined();
+    });
+
+    it("sends credential_hint when provider_api_key is set", async () => {
+        let capturedBody: Record<string, unknown> = {};
+        mockFetch((_, init) => {
+            capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
+            return jsonResponse({
+                decision: "allow",
+                record_id: "rec_cred",
+                metering: { cost_usd: "0", tokens_in: 0, tokens_out: 0 },
+                result: {
+                    status_code: 200,
+                    body: { choices: [{ message: { content: "ok" } }] },
+                },
+            });
+        });
+
+        const client = new AiGatewayClient(
+            new AiGatewayConfig({ gateway_url: "http://localhost:7080" }),
+        );
+        await client.execute({
+            messages: [{ role: "user", content: "hi" }],
+            provider: "openai",
+            model: "gpt-4o",
+            provider_api_key: "sk-my-own-key",
+        });
+        expect(capturedBody["credential_hint"]).toBe("sk-my-own-key");
     });
 
     it("includes attribution when project_id is set", async () => {

@@ -173,10 +173,12 @@ export class AiGatewayClient {
 
         const url = `${this.config.gateway_url}/v1/actions:execute`;
 
-        // For non-streaming requests apply a timeout via AbortController.
+        // Apply timeout to connection establishment for all requests.
+        // The timeout is cleared in the finally block once response headers arrive,
+        // so streaming payloads are not cut off by this timer.
         const controller = new AbortController();
         const timeoutMs = this.config.timeout * 1000;
-        const timeoutId = stream ? null : setTimeout(() => controller.abort(), timeoutMs);
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
         let response: Response;
         try {
@@ -194,7 +196,7 @@ export class AiGatewayClient {
                 `Network error: ${err instanceof Error ? err.message : String(err)}`,
             );
         } finally {
-            if (timeoutId !== null) clearTimeout(timeoutId);
+            clearTimeout(timeoutId);
         }
 
         if (response.status === 504) {

@@ -22,8 +22,11 @@ export function anthropicClient(
     // the node-fetch polyfill bundled with the SDK. node-fetch v2 emits "Premature
     // close" on streaming responses when the socket close event races the data-
     // listener teardown; native fetch does not have this bug.
-    const nativeFetch = typeof globalThis.fetch === "function"
-        ? globalThis.fetch.bind(globalThis) as typeof fetch
+    // Extract the Fetch type from Anthropic's constructor params to avoid the
+    // URL-in-input-union mismatch between Node's global fetch type and the SDK's Fetch type.
+    type AnthropicFetch = NonNullable<ConstructorParameters<typeof Anthropic>[0]>["fetch"];
+    const nativeFetch: AnthropicFetch | undefined = typeof globalThis.fetch === "function"
+        ? globalThis.fetch.bind(globalThis) as unknown as AnthropicFetch
         : undefined;
     return new Anthropic({
         baseURL: cfg.proxyUrl("anthropic"),

@@ -18,7 +18,11 @@ describe("AiGatewayConfig", () => {
     it("proxyUrl with no token", () => {
         const cfg = new AiGatewayConfig({
             gateway_url: "http://localhost:7080",
+            gateway_token: "",
             workload_id: "wl_test",
+            project_id: "",
+            account_id: "",
+            customer_id: "",
         });
         expect(cfg.proxyUrl("openai")).toBe("http://localhost:7080/proxy/openai/w/wl_test/");
     });
@@ -28,6 +32,9 @@ describe("AiGatewayConfig", () => {
             gateway_url: "https://gw.axemere.ai",
             gateway_token: "axm_k_abc",
             workload_id: "wl_x",
+            project_id: "",
+            account_id: "",
+            customer_id: "",
         });
         expect(cfg.proxyUrl("anthropic")).toBe(
             "https://gw.axemere.ai/proxy/anthropic/k/axm_k_abc/w/wl_x/",
@@ -49,7 +56,13 @@ describe("AiGatewayConfig", () => {
     });
 
     it("proxyUrl with no segments appends trailing slash", () => {
-        const cfg = new AiGatewayConfig({ gateway_url: "http://localhost:7080" });
+        const cfg = new AiGatewayConfig({
+            gateway_url: "http://localhost:7080",
+            gateway_token: "",
+            project_id: "",
+            account_id: "",
+            customer_id: "",
+        });
         expect(cfg.proxyUrl("openai")).toBe("http://localhost:7080/proxy/openai/");
     });
 
@@ -84,5 +97,20 @@ describe("AiGatewayConfig", () => {
         cfg.setDefaults({ provider: "openai", model: "gpt-4o" });
         expect(cfg.default_provider).toBe("openai");
         expect(cfg.default_model).toBe("gpt-4o");
+    });
+
+    it("reads gateway_token from env", () => {
+        process.env["AXEMERE_GATEWAY_TOKEN"] = "tok_from_env";
+        const cfg = new AiGatewayConfig();
+        expect(cfg.gateway_token).toBe("tok_from_env");
+        delete process.env["AXEMERE_GATEWAY_TOKEN"];
+    });
+
+    it("coerces non-string label values in AXEMERE_LABELS to strings", () => {
+        process.env["AXEMERE_LABELS"] = '{"count":42,"flag":true}';
+        const cfg = new AiGatewayConfig();
+        expect(cfg.labels["count"]).toBe("42");
+        expect(cfg.labels["flag"]).toBe("true");
+        delete process.env["AXEMERE_LABELS"];
     });
 });

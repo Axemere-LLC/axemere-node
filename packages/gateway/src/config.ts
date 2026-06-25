@@ -16,7 +16,11 @@ function parseLabelsEnv(raw: string): Record<string, string> {
     try {
         const parsed = JSON.parse(raw) as unknown;
         if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
-            return parsed as Record<string, string>;
+            const result: Record<string, string> = {};
+            for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
+                result[k] = String(v);
+            }
+            return result;
         }
     } catch {
         // Ignore parse errors — return empty
