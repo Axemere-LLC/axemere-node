@@ -54,7 +54,7 @@ async function postAction(
         workload_id: cfg.workload_id,
         ingress_mode: "explicit_action_request",
         action: {
-            type: "ai.infer",
+            type: "llm_chat",
             method: "POST",
             target_host: "api.openai.com",
             target_path: "/v1/chat/completions",

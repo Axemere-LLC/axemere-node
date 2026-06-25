@@ -169,7 +169,7 @@ function buildActionRequest(cfg: AiGatewayConfig, delegationToken: string, param
         ingress_mode: "explicit_action_request",
         delegation_token: delegationToken,
         action: {
-            type: "ai.infer",
+            type: "llm_chat",
             method: "POST",
             target_host: "api.openai.com",
             target_path: "/v1/chat/completions",
@@ -216,7 +216,7 @@ function demoShowTokenStructure(tokenJson: string): void {
 }
 
 async function demoDelegatedRequest(cfg: AiGatewayConfig, tokenJson: string): Promise<void> {
-    console.log("\n--- Delegated request (ai.infer allowed) ---");
+    console.log("\n--- Delegated request (llm_chat allowed) ---");
     const payload = buildActionRequest(cfg, tokenJson, {
         model: "gpt-4o-mini",
         max_tokens: 64,
@@ -241,13 +241,13 @@ async function demoScopeEnforcement(
     privateKey: crypto.KeyObject,
     publicKey: crypto.KeyObject,
 ): Promise<void> {
-    console.log("\n--- Scope enforcement: ai.infer blocked (only ai.embed allowed) ---");
+    console.log("\n--- Scope enforcement: llm_chat blocked (only ai.embed allowed) ---");
     const embedOnlyToken = createDelegationToken(privateKey, publicKey, {
         workload_id: cfg.workload_id,
         issued_by: "governance-service",
         audience: cfg.workload_id,
         ttl_seconds: 300,
-        actions_allow: ["ai.embed"],   // does NOT include ai.infer
+        actions_allow: ["ai.embed"],   // does NOT include llm_chat
         targets_allow: ["api.openai.com"],
     });
     const payload = buildActionRequest(cfg, embedOnlyToken, {
@@ -271,7 +271,7 @@ async function demoBudgetConstrainedToken(
         issued_by: "governance-service",
         audience: cfg.workload_id,
         ttl_seconds: 300,
-        actions_allow: ["ai.infer"],
+        actions_allow: ["llm_chat"],
         usd_max: "0.001",
         max_requests: 1,
     });
@@ -324,7 +324,7 @@ async function main(): Promise<void> {
         issued_by: "governance-service",
         audience: cfg.workload_id,
         ttl_seconds: 3600,
-        actions_allow: ["ai.infer", "ai.embed"],
+        actions_allow: ["llm_chat", "ai.embed"],
         targets_allow: ["api.openai.com", "api.anthropic.com"],
         usd_max: "5.00",
     });

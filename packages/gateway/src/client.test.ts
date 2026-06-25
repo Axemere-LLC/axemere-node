@@ -11,12 +11,17 @@ import {
 // fetch mock helpers
 // ---------------------------------------------------------------------------
 
-type MockFetchImpl = (url: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+// Mocks may resolve synchronously (return Response) or asynchronously
+// (return Promise<Response>); accept both so test callbacks need no `async`.
+// Param types derive from the global fetch signature to stay portable across
+// the @types/node / DOM lib differences (no reliance on a global RequestInfo).
+type MockFetchImpl = (
+    url: Parameters<typeof fetch>[0],
+    init?: Parameters<typeof fetch>[1],
+) => Response | Promise<Response>;
 
 function mockFetch(impl: MockFetchImpl): jest.SpyInstance {
-    return jest
-        .spyOn(global, "fetch" as keyof typeof global)
-        .mockImplementation(impl as typeof fetch);
+    return jest.spyOn(globalThis, "fetch").mockImplementation(impl as typeof fetch);
 }
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -129,7 +134,7 @@ describe("AiGatewayClient — successful response (Anthropic)", () => {
 describe("AiGatewayClient — error mapping", () => {
     const client = new AiGatewayClient(baseConfig);
     const params = {
-        messages: [{ role: "user", content: "hi" }],
+        messages: [{ role: "user" as const, content: "hi" }],
         provider: "openai",
         model: "gpt-4o",
     };
@@ -181,7 +186,7 @@ describe("AiGatewayClient — error mapping", () => {
 
     it("throws GatewayError on non-OK HTTP status", async () => {
         mockFetch(() => jsonResponse({ message: "internal error" }, 500));
-        const err = await client.execute(params).catch((e) => e as GatewayError);
+        const err = (await client.execute(params).catch((e) => e)) as GatewayError;
         expect(err).toBeInstanceOf(GatewayError);
         expect(err.status_code).toBe(500);
     });

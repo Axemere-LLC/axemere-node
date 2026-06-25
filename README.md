@@ -35,11 +35,12 @@ npm install @axemere/gateway-openai
 ```typescript
 // Before
 import OpenAI from "openai";
+const client = new OpenAI();
 
-// After — one line change
-import { OpenAI } from "@axemere/gateway-openai";
+// After — swap the import for the gateway factory
+import { openaiClient } from "@axemere/gateway-openai";
 
-const client = new OpenAI(); // reads AXEMERE_GATEWAY_URL + AXEMERE_WORKLOAD_TOKEN
+const client = openaiClient(); // reads AXEMERE_GATEWAY_URL + AXEMERE_GATEWAY_TOKEN
 const response = await client.chat.completions.create({
   model: "gpt-4o-mini",
   messages: [{ role: "user", content: "Hello" }],
@@ -69,7 +70,7 @@ npx ts-node 01_basic_chat.ts
 
 - Node.js 18+
 - A running Axemere AI Gateway (`AXEMERE_GATEWAY_URL`)
-- A workload token (`AXEMERE_WORKLOAD_TOKEN`)
+- A gateway token (`AXEMERE_GATEWAY_TOKEN`)
 
 ## Links
 

@@ -17,7 +17,7 @@ npm install @axemere/gateway-openai
 ```typescript
 import { openaiClient } from "@axemere/gateway-openai";
 
-const client = openaiClient(); // reads AXEMERE_GATEWAY_URL + AXEMERE_WORKLOAD_TOKEN
+const client = openaiClient(); // reads AXEMERE_GATEWAY_URL + AXEMERE_GATEWAY_TOKEN
 
 const response = await client.chat.completions.create({
   model: "gpt-4o-mini",
@@ -33,7 +33,7 @@ Streaming works exactly as it does with the standard `openai` package.
 | Env var | Description |
 |---------|-------------|
 | `AXEMERE_GATEWAY_URL` | Gateway base URL, e.g. `http://localhost:7080` |
-| `AXEMERE_WORKLOAD_TOKEN` | Workload token issued by the gateway |
+| `AXEMERE_GATEWAY_TOKEN` | Gateway token issued by the gateway |
 
 ## Links
 

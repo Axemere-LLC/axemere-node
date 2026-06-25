@@ -17,7 +17,7 @@ npm install @axemere/gateway
 ```typescript
 import { AiGatewayClient, AiGatewayConfig } from "@axemere/gateway";
 
-const config = new AiGatewayConfig(); // reads AXEMERE_GATEWAY_URL + AXEMERE_WORKLOAD_TOKEN
+const config = new AiGatewayConfig(); // reads AXEMERE_GATEWAY_URL + AXEMERE_GATEWAY_TOKEN
 const client = new AiGatewayClient(config);
 
 const result = await client.execute({
@@ -34,7 +34,7 @@ console.log(result.metering?.cost_usd); // "0.000042"
 | Env var | Description |
 |---------|-------------|
 | `AXEMERE_GATEWAY_URL` | Gateway base URL, e.g. `http://localhost:7080` |
-| `AXEMERE_WORKLOAD_TOKEN` | Workload token issued by the gateway |
+| `AXEMERE_GATEWAY_TOKEN` | Gateway token issued by the gateway |
 | `AXEMERE_WORKLOAD_ID` | Workload identifier for attribution |
 | `AXEMERE_PROJECT_ID` | Project identifier for spend grouping |
 

@@ -24,6 +24,22 @@ function parseLabelsEnv(raw: string): Record<string, string> {
     return {};
 }
 
+/**
+ * Resolved configuration for talking to the Axemere AI Gateway.
+ *
+ * Each field is taken from the matching {@link AiGatewayOptions} value when
+ * provided, otherwise from its `AXEMERE_*` environment variable, otherwise a
+ * safe default. Values are read once at construction time. Also builds the
+ * proxy base URL used by the OpenAI/Anthropic drop-in wrappers.
+ *
+ * @example
+ * ```ts
+ * // From env (AXEMERE_GATEWAY_URL, AXEMERE_GATEWAY_TOKEN, ...)
+ * const config = new AiGatewayConfig();
+ * // Or explicit overrides
+ * const config2 = new AiGatewayConfig({ gateway_url: "http://localhost:7080" });
+ * ```
+ */
 export class AiGatewayConfig {
     readonly gateway_url: string;
     readonly gateway_token: string;
@@ -58,9 +74,14 @@ export class AiGatewayConfig {
         this.provider_api_key =
             opts.provider_api_key ?? process.env["AXEMERE_PROVIDER_API_KEY"] ?? "";
 
+        // Timeout in seconds; falls back to 120 on missing/invalid input so an
+        // unparseable env value can never produce a NaN AbortController delay.
         const timeoutEnv = process.env["AXEMERE_TIMEOUT_SECONDS"];
+        const rawTimeout = opts.timeout ?? (timeoutEnv ? parseInt(timeoutEnv, 10) : undefined);
         this.timeout =
-            opts.timeout ?? (timeoutEnv ? parseInt(timeoutEnv, 10) : 120);
+            rawTimeout === undefined || isNaN(rawTimeout) || rawTimeout <= 0
+                ? 120
+                : rawTimeout;
 
         if (opts.labels !== undefined) {
             this.labels = opts.labels;

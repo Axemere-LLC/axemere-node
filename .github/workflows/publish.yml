@@ -25,6 +25,10 @@ jobs:
 
       - run: pnpm -r build
 
+      # --if-present must precede the script name, otherwise pnpm forwards it to
+      # jest as an (unrecognized) CLI flag instead of consuming it itself.
+      - run: pnpm -r --if-present test
+
       - name: Publish @axemere/gateway
         run: pnpm publish --filter @axemere/gateway --no-git-checks
         env:

@@ -17,7 +17,7 @@ npm install @axemere/gateway-anthropic
 ```typescript
 import { anthropicClient } from "@axemere/gateway-anthropic";
 
-const client = anthropicClient(); // reads AXEMERE_GATEWAY_URL + AXEMERE_WORKLOAD_TOKEN
+const client = anthropicClient(); // reads AXEMERE_GATEWAY_URL + AXEMERE_GATEWAY_TOKEN
 
 const message = await client.messages.create({
   model: "claude-sonnet-4-6",
@@ -34,7 +34,7 @@ Streaming works exactly as it does with the standard `@anthropic-ai/sdk` package
 | Env var | Description |
 |---------|-------------|
 | `AXEMERE_GATEWAY_URL` | Gateway base URL, e.g. `http://localhost:7080` |
-| `AXEMERE_WORKLOAD_TOKEN` | Workload token issued by the gateway |
+| `AXEMERE_GATEWAY_TOKEN` | Gateway token issued by the gateway |
 
 ## Links
 

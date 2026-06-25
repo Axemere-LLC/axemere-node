@@ -29,6 +29,24 @@ type WireBody = {
     credential_hint?: string;
 };
 
+/**
+ * Client for the Axemere AI Gateway explicit action API.
+ *
+ * Wraps the gateway's `/v1/actions:execute` endpoint, building the wire request
+ * from {@link ExecuteParams}, applying attribution and delegation, and normalizing
+ * provider responses (OpenAI- and Anthropic-style) into a uniform shape.
+ *
+ * @example
+ * ```ts
+ * const client = new AiGatewayClient(new AiGatewayConfig());
+ * const res = await client.execute({
+ *   provider: "openai",
+ *   model: "gpt-4o-mini",
+ *   messages: [{ role: "user", content: "Hello" }],
+ * });
+ * console.log(res.content);
+ * ```
+ */
 export class AiGatewayClient {
     private readonly config: AiGatewayConfig;
 
@@ -36,10 +54,33 @@ export class AiGatewayClient {
         this.config = config;
     }
 
+    /**
+     * Executes a governed AI request through the gateway.
+     *
+     * Resolves provider/model and attribution from {@link ExecuteParams}, falling
+     * back to the {@link AiGatewayConfig} defaults. When `stream` is `true` the
+     * returned promise resolves to an async-iterable of {@link StreamChunk};
+     * otherwise it resolves to a single {@link ExecuteResponse}.
+     *
+     * @param params - Request parameters: messages plus optional provider, model,
+     *   attribution fields, delegation token, and provider-specific passthrough.
+     * @returns The completed response, or a stream of chunks when `stream: true`.
+     * @throws {GatewayError} On missing config (gateway_url/provider/model),
+     *   network failure, or non-OK gateway/provider status.
+     * @throws {PolicyDeniedError} When the gateway denies the request by policy.
+     * @throws {QuotaExceededError} When a spend/quota limit is exceeded (HTTP 429).
+     * @throws {GatewayTimeoutError} When the request times out (client or HTTP 504).
+     */
     execute(params: ExecuteParams & { stream?: false }): Promise<ExecuteResponse>;
     execute(params: ExecuteParams & { stream: true }): Promise<AsyncIterable<StreamChunk>>;
     execute(params: ExecuteParams): Promise<ExecuteResponse | AsyncIterable<StreamChunk>>;
     async execute(params: ExecuteParams): Promise<ExecuteResponse | AsyncIterable<StreamChunk>> {
+        if (!this.config.gateway_url) {
+            throw new GatewayError(
+                "gateway_url is required; set AXEMERE_GATEWAY_URL or pass it to AiGatewayConfig",
+            );
+        }
+
         const provider = (params.provider as string | undefined) ?? this.config.default_provider;
         const model = (params.model as string | undefined) ?? this.config.default_model;
 
@@ -161,7 +202,7 @@ export class AiGatewayClient {
         }
 
         if (stream) {
-            return parseStreamResponse(response);
+            return parseStreamResponse(response, provider);
         }
 
         return parseResponse(response, provider);
@@ -220,8 +261,14 @@ async function parseResponse(response: Response, provider: string): Promise<Exec
     let content = "";
     if (providerBody) {
         if (provider === "anthropic") {
-            const contentArr = providerBody["content"] as Array<{ text?: string }> | undefined;
-            content = contentArr?.[0]?.text ?? "";
+            // Anthropic returns an array of content blocks; concatenate every
+            // text block (tool_use / thinking blocks have no text and are skipped).
+            const contentArr = providerBody["content"] as
+                | Array<{ type?: string; text?: string }>
+                | undefined;
+            const textBlocks =
+                contentArr?.filter((b) => b.type === "text").map((b) => b.text ?? "") ?? [];
+            content = textBlocks.join("");
         } else {
             // OpenAI-compatible format
             const choices = providerBody["choices"] as
@@ -242,7 +289,7 @@ async function parseResponse(response: Response, provider: string): Promise<Exec
     };
 }
 
-function parseStreamResponse(response: Response): AsyncIterable<StreamChunk> {
+function parseStreamResponse(response: Response, provider: string): AsyncIterable<StreamChunk> {
     if (!response.ok) {
         return {
             [Symbol.asyncIterator]: async function* () {
@@ -313,6 +360,21 @@ function parseStreamResponse(response: Response): AsyncIterable<StreamChunk> {
                                 ? chunk["record_id"]
                                 : undefined;
                             metering = chunk["metering"] as Metering | undefined;
+                            continue;
+                        }
+
+                        if (provider === "anthropic") {
+                            // Anthropic delta format:
+                            //   {"type":"content_block_delta","delta":{"type":"text_delta","text":"hi"}}
+                            if (chunk["type"] === "content_block_delta") {
+                                const aDelta = chunk["delta"] as
+                                    | { type?: string; text?: string }
+                                    | undefined;
+                                const text = aDelta?.text;
+                                if (text) {
+                                    yield { content: text, is_final: false };
+                                }
+                            }
                             continue;
                         }
 
