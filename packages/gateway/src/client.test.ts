@@ -287,6 +287,57 @@ describe("AiGatewayClient — wire request", () => {
         expect(capturedBody["credential_hint"]).toBe("sk-my-own-key");
     });
 
+    it("defaults max_tokens to 256 when not provided", async () => {
+        let capturedBody: Record<string, unknown> = {};
+        mockFetch((_, init) => {
+            capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
+            return jsonResponse({
+                decision: "allow",
+                record_id: "rec_mt",
+                metering: { cost_usd: "0", tokens_in: 0, tokens_out: 0 },
+                result: {
+                    status_code: 200,
+                    body: { choices: [{ message: { content: "ok" } }] },
+                },
+            });
+        });
+
+        const client = new AiGatewayClient(baseConfig);
+        await client.execute({
+            messages: [{ role: "user", content: "hi" }],
+            provider: "openai",
+            model: "gpt-4o",
+        });
+        const params = (capturedBody["action"] as Record<string, unknown>)?.["params"] as Record<string, unknown>;
+        expect(params["max_tokens"]).toBe(256);
+    });
+
+    it("uses caller-supplied max_tokens when provided", async () => {
+        let capturedBody: Record<string, unknown> = {};
+        mockFetch((_, init) => {
+            capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
+            return jsonResponse({
+                decision: "allow",
+                record_id: "rec_mt2",
+                metering: { cost_usd: "0", tokens_in: 0, tokens_out: 0 },
+                result: {
+                    status_code: 200,
+                    body: { choices: [{ message: { content: "ok" } }] },
+                },
+            });
+        });
+
+        const client = new AiGatewayClient(baseConfig);
+        await client.execute({
+            messages: [{ role: "user", content: "hi" }],
+            provider: "openai",
+            model: "gpt-4o",
+            max_tokens: 1024,
+        });
+        const params = (capturedBody["action"] as Record<string, unknown>)?.["params"] as Record<string, unknown>;
+        expect(params["max_tokens"]).toBe(1024);
+    });
+
     it("includes attribution when project_id is set", async () => {
         let capturedBody: Record<string, unknown> = {};
         mockFetch((_, init) => {

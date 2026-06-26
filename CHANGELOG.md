@@ -8,6 +8,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- `@axemere/gateway`: `AiGatewayClient.execute()` now defaults `max_tokens` to `256` when the caller omits it, preventing HTTP 400 errors from Anthropic ("max_tokens: Field required"). Callers that pass an explicit value are unaffected.
+
+---
+
+## [0.1.7] - 2026-06-25
+
+### Fixed
 - `@axemere/gateway`: `AiGatewayConfig` now defaults `gateway_url` to `http://localhost:7080` when neither the option nor `AXEMERE_GATEWAY_URL` is set, matching the Python SDK so local development works without any environment configuration.
 
 ---
@@ -30,5 +37,6 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - `@axemere/gateway-openai`: unit tests now correctly isolate against live `AXEMERE_*` environment variables so the suite passes whether or not real credentials are present.
 - `@axemere/gateway-anthropic`: same test environment isolation fix as `gateway-openai`.
 
-[Unreleased]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.6...HEAD
+[Unreleased]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.7...HEAD
+[0.1.7]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/Axemere-LLC/axemere-node/releases/tag/v0.1.6

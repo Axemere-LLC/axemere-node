@@ -43,6 +43,15 @@ export interface StreamChunk {
     metering?: Metering;
 }
 
+/**
+ * Parameters for {@link AiGatewayClient.execute}.
+ *
+ * Any extra keys beyond the named fields are forwarded verbatim to the
+ * provider as `provider_params`. Notable passthrough field:
+ *
+ * - `max_tokens` — defaults to `256` when omitted (Anthropic requires this
+ *   field and rejects requests without it). Pass an explicit value to override.
+ */
 export interface ExecuteParams {
     messages: Message[];
     provider?: string;

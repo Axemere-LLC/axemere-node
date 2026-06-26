@@ -118,6 +118,7 @@ export class AiGatewayClient {
         const provider_params: Record<string, unknown> = {
             model,
             messages,
+            max_tokens: (extra_params["max_tokens"] as number | undefined) ?? 256,
             ...extra_params,
         };
 
