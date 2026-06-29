@@ -43,3 +43,13 @@ jobs:
         run: pnpm publish --filter @axemere/gateway-anthropic --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @axemere/gateway-google
+        run: pnpm publish --filter @axemere/gateway-google --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @axemere/gateway-langchain
+        run: pnpm publish --filter @axemere/gateway-langchain --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

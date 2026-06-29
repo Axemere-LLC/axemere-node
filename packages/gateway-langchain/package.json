@@ -1,7 +1,7 @@
 {
-  "name": "@axemere/gateway-anthropic",
+  "name": "@axemere/gateway-langchain",
   "version": "0.1.9",
-  "description": "Axemere AI Gateway SDK — Anthropic drop-in wrapper",
+  "description": "Axemere AI Gateway SDK — LangChain BaseChatModel integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "README.md"],
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Axemere-LLC/axemere-node.git",
-    "directory": "packages/gateway-anthropic"
+    "directory": "packages/gateway-langchain"
   },
   "publishConfig": {
     "access": "public"
@@ -21,11 +21,16 @@
     "build": "tsc",
     "test": "jest"
   },
+  "peerDependencies": {
+    "@langchain/core": ">=0.3.0"
+  },
   "dependencies": {
     "@axemere/gateway": "workspace:*",
-    "@anthropic-ai/sdk": "^0.36.0"
+    "@axemere/gateway-openai": "workspace:*",
+    "@axemere/gateway-anthropic": "workspace:*"
   },
   "devDependencies": {
+    "@langchain/core": "^0.3.0",
     "typescript": "^5.4.0",
     "@types/node": "^20.0.0",
     "@types/jest": "^29.0.0",

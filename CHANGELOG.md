@@ -7,6 +7,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- `@axemere/gateway-google`: new package — `genaiClient()` factory that returns a `GoogleGenerativeAI` instance pre-configured to route all model requests through the Axemere AI Gateway; gateway auth headers and base URL are injected automatically into every `getGenerativeModel()` call.
+- `@axemere/gateway-langchain`: new package — `ChatAiGateway` LangChain `BaseChatModel` that routes chat completions through the Axemere AI Gateway action API, supporting 12 providers; also re-exports `aiGatewayOpenAIClient` and `aiGatewayAnthropicClient` for proxy-mode use from within LangChain workflows.
+- `@axemere/gateway`: `aiGatewayHeaders()` helper and `PLACEHOLDER_API_KEY` constant are now part of the public API, enabling third-party gateway wrapper packages.
+
+---
+
+## [0.1.8] - 2026-06-26
+
 ### Fixed
 - `@axemere/gateway`: `AiGatewayClient.execute()` now defaults `max_tokens` to `256` when the caller omits it, preventing HTTP 400 errors from Anthropic ("max_tokens: Field required"). Callers that pass an explicit value are unaffected.
 
@@ -37,6 +46,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - `@axemere/gateway-openai`: unit tests now correctly isolate against live `AXEMERE_*` environment variables so the suite passes whether or not real credentials are present.
 - `@axemere/gateway-anthropic`: same test environment isolation fix as `gateway-openai`.
 
-[Unreleased]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.7...HEAD
+[Unreleased]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.8...HEAD
+[0.1.8]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/Axemere-LLC/axemere-node/releases/tag/v0.1.6

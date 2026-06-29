@@ -1,6 +1,6 @@
 {
   "name": "@axemere/gateway-openai",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Axemere AI Gateway SDK — OpenAI drop-in wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
