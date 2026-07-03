@@ -75,7 +75,7 @@ npx ts-node 01_basic_chat.ts
 ## Links
 
 - Website: [axemere.ai](https://axemere.ai)
-- Docs: [axemere.ai/docs](https://axemere.ai/docs)
+- Docs: [axemere.ai/docs](https://axemere.ai/docs/sdks/typescript)
 - Issues: [github.com/Axemere-LLC/axemere-node/issues](https://github.com/Axemere-LLC/axemere-node/issues)
 
 ## License

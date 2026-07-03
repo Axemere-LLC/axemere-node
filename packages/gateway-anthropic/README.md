@@ -39,7 +39,7 @@ Streaming works exactly as it does with the standard `@anthropic-ai/sdk` package
 ## Links
 
 - [Axemere AI Gateway](https://axemere.ai)
-- [Documentation](https://axemere.ai/docs)
+- [Documentation](https://axemere.ai/docs/sdks/typescript)
 - [GitHub](https://github.com/Axemere-LLC/axemere-node)
 
 ## License

@@ -41,7 +41,7 @@ console.log(result.metering?.cost_usd); // "0.000042"
 ## Links
 
 - [Axemere AI Gateway](https://axemere.ai)
-- [Documentation](https://axemere.ai/docs)
+- [Documentation](https://axemere.ai/docs/sdks/typescript)
 - [GitHub](https://github.com/Axemere-LLC/axemere-node)
 
 ## License
