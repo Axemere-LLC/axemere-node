@@ -67,6 +67,71 @@ describe("AiGatewayClient — validation", () => {
             }),
         ).rejects.toThrow(GatewayError);
     });
+
+    it("throws GatewayError for azure_openai without target_host", async () => {
+        await expect(
+            client.execute({
+                messages: [{ role: "user", content: "hi" }],
+                provider: "azure_openai",
+                model: "gpt-4o",
+            }),
+        ).rejects.toThrow(GatewayError);
+    });
+});
+
+describe("AiGatewayClient — target_host override", () => {
+    it("uses the caller-supplied target_host for azure_openai", async () => {
+        let capturedBody: Record<string, unknown> = {};
+        mockFetch((_, init) => {
+            capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
+            return jsonResponse({
+                decision: "allow",
+                record_id: "rec_azure",
+                metering: { cost_usd: "0", tokens_in: 0, tokens_out: 0 },
+                result: {
+                    status_code: 200,
+                    body: { choices: [{ message: { content: "ok" } }] },
+                },
+            });
+        });
+
+        const client = new AiGatewayClient(baseConfig);
+        await client.execute({
+            messages: [{ role: "user", content: "hi" }],
+            provider: "azure_openai",
+            model: "gpt-4o",
+            target_host: "my-resource.openai.azure.com",
+        });
+        const action = capturedBody["action"] as Record<string, unknown>;
+        expect(action["target_host"]).toBe("my-resource.openai.azure.com");
+        expect(action["type"]).toBe("ai.infer");
+    });
+
+    it("overrides the registry host for a provider that already has a default", async () => {
+        let capturedBody: Record<string, unknown> = {};
+        mockFetch((_, init) => {
+            capturedBody = JSON.parse(init?.body as string) as Record<string, unknown>;
+            return jsonResponse({
+                decision: "allow",
+                record_id: "rec_override",
+                metering: { cost_usd: "0", tokens_in: 0, tokens_out: 0 },
+                result: {
+                    status_code: 200,
+                    body: { choices: [{ message: { content: "ok" } }] },
+                },
+            });
+        });
+
+        const client = new AiGatewayClient(baseConfig);
+        await client.execute({
+            messages: [{ role: "user", content: "hi" }],
+            provider: "openai",
+            model: "gpt-4o",
+            target_host: "custom.proxy.internal",
+        });
+        const action = capturedBody["action"] as Record<string, unknown>;
+        expect(action["target_host"]).toBe("custom.proxy.internal");
+    });
 });
 
 describe("AiGatewayClient — successful response (OpenAI)", () => {

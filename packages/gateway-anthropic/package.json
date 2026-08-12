@@ -1,6 +1,6 @@
 {
   "name": "@axemere/gateway-anthropic",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "Axemere AI Gateway SDK — Anthropic drop-in wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

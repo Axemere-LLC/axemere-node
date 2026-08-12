@@ -90,6 +90,13 @@ export class AiGatewayClient {
             throw new GatewayError(`unknown provider: ${provider}`);
         }
 
+        const target_host = (params.target_host as string | undefined) ?? route.host;
+        if (!target_host) {
+            throw new GatewayError(
+                `provider "${provider}" has no default host; pass target_host explicitly`,
+            );
+        }
+
         const workload_id  = (params.workload_id  as string | undefined) ?? this.config.workload_id;
         const project_id   = (params.project_id   as string | undefined) ?? this.config.project_id;
         const account_id   = (params.account_id   as string | undefined) ?? this.config.account_id;
@@ -104,6 +111,7 @@ export class AiGatewayClient {
             messages,
             provider: _p,
             model: _m,
+            target_host: _th,
             workload_id: _wl,
             project_id: _pi,
             account_id: _ai,
@@ -134,9 +142,9 @@ export class AiGatewayClient {
             workload_id: workload_id ?? "",
             ingress_mode: "explicit_action_request",
             action: {
-                type: "llm_chat",
+                type: "ai.infer",
                 method: "POST",
-                target_host: route.host,
+                target_host,
                 target_path,
                 params: provider_params,
             },

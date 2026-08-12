@@ -56,6 +56,12 @@ export interface ExecuteParams {
     messages: Message[];
     provider?: string;
     model?: string;
+    /**
+     * Overrides the provider's registry host. Required for `azure_openai`,
+     * which has no static host; optional passthrough for every other
+     * provider.
+     */
+    target_host?: string;
     workload_id?: string;
     project_id?: string;
     account_id?: string;

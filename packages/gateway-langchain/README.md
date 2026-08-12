@@ -21,8 +21,11 @@ console.log(res.content);
 
 ## Supported providers
 
-`openai`, `anthropic`, `mistral`, `google`, `xai`, `deepseek`, `groq`, `together`, `fireworks`,
-`perplexity`, `openrouter`, `cohere`
+Every provider in the MVGC gateway registry, re-exported as `PROVIDER_ROUTES` from
+`@axemere/gateway`: `openai`, `anthropic`, `gemini` (alias `google`), `cohere`, `mistral`,
+`groq`, `deepseek`, `together`, `minimax`, `moonshot`, `zhipu`, `xai`, `perplexity`,
+`openrouter`, `nvidia-nim`, `upstage`, `fireworks`, `qwen`, `bytedance`, `stepfun`, `bedrock`,
+`vertex`, `azure_openai`.
 
 ## Proxy-mode convenience re-exports
 

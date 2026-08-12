@@ -8,6 +8,21 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- Requests to `minimax` no longer fail — its upstream host and path were incorrect (`api.minimax.chat` + legacy native path → `api.minimax.io` + `/v1/chat/completions`).
+- `@axemere/gateway-langchain` no longer maintains its own drifted copy of the provider routing table; it now shares `@axemere/gateway`'s table, so both packages route identically.
+
+### Added
+- Support for six previously-missing providers: `azure_openai`, `qwen`, `bytedance`, `stepfun`, `bedrock`, `vertex`.
+- `execute()` accepts an optional `target_host` override, letting callers point a request at a specific host — required for `azure_openai`, which has no default host.
+
+### Changed
+- Internal request labeling (`action.type`) is now consistently `"ai.infer"` for all provider requests (was `"llm_chat"`).
+
+---
+
+## [0.1.10] - 2026-07-03
+
+### Fixed
 - READMEs now link to the Node/TypeScript-specific docs page (`/docs/sdks/typescript`) instead of the generic docs root.
 
 ---
@@ -53,7 +68,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - `@axemere/gateway-openai`: unit tests now correctly isolate against live `AXEMERE_*` environment variables so the suite passes whether or not real credentials are present.
 - `@axemere/gateway-anthropic`: same test environment isolation fix as `gateway-openai`.
 
-[Unreleased]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.9...HEAD
+[Unreleased]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.10...HEAD
+[0.1.10]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.6...v0.1.7

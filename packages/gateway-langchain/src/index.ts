@@ -10,7 +10,7 @@ import { AIMessageChunk } from "@langchain/core/messages";
 import type { ChatResult } from "@langchain/core/outputs";
 import { ChatGenerationChunk } from "@langchain/core/outputs";
 import type { CallbackManagerForLLMRun } from "@langchain/core/callbacks/manager";
-import { AiGatewayConfig, GatewayError, PolicyDeniedError } from "@axemere/gateway";
+import { AiGatewayConfig, GatewayError, PolicyDeniedError, PROVIDER_ROUTES } from "@axemere/gateway";
 import { openaiClient } from "@axemere/gateway-openai";
 import { anthropicClient } from "@axemere/gateway-anthropic";
 
@@ -18,30 +18,10 @@ export { AiGatewayConfig, GatewayError, PolicyDeniedError };
 export { openaiClient as aiGatewayOpenAIClient };
 export { anthropicClient as aiGatewayAnthropicClient };
 
-// ---------------------------------------------------------------------------
-// Provider routing table
-// ---------------------------------------------------------------------------
-
-interface ProviderRoute {
-    target_host: string;
-    target_path: string;
-    format: "openai" | "anthropic" | "gemini";
-}
-
-const PROVIDER_ROUTES: Record<string, ProviderRoute> = {
-    openai:      { target_host: "api.openai.com",                    target_path: "/v1/chat/completions",                    format: "openai" },
-    anthropic:   { target_host: "api.anthropic.com",                 target_path: "/v1/messages",                            format: "anthropic" },
-    mistral:     { target_host: "api.mistral.ai",                    target_path: "/v1/chat/completions",                    format: "openai" },
-    google:      { target_host: "generativelanguage.googleapis.com", target_path: "/v1beta/models/{model}:generateContent",  format: "gemini" },
-    xai:         { target_host: "api.x.ai",                          target_path: "/v1/chat/completions",                    format: "openai" },
-    deepseek:    { target_host: "api.deepseek.com",                  target_path: "/v1/chat/completions",                    format: "openai" },
-    groq:        { target_host: "api.groq.com",                      target_path: "/openai/v1/chat/completions",             format: "openai" },
-    together:    { target_host: "api.together.ai",                   target_path: "/v1/chat/completions",                    format: "openai" },
-    fireworks:   { target_host: "api.fireworks.ai",                  target_path: "/inference/v1/chat/completions",          format: "openai" },
-    perplexity:  { target_host: "api.perplexity.ai",                 target_path: "/chat/completions",                       format: "openai" },
-    openrouter:  { target_host: "openrouter.ai",                     target_path: "/api/v1/chat/completions",                format: "openai" },
-    cohere:      { target_host: "api.cohere.com",                    target_path: "/v2/chat",                                format: "openai" },
-};
+// Provider routing (host/path/format per provider) lives in @axemere/gateway
+// as the single source of truth, kept in sync with the MVGC gateway's
+// provider registry. This package only adds message conversion + response
+// parsing on top of that shared table.
 
 // ---------------------------------------------------------------------------
 // Message serialization helpers
@@ -348,7 +328,7 @@ export class ChatAiGateway extends BaseChatModel {
         tools?: WireMessage[],
     ): Record<string, unknown> {
         const route = PROVIDER_ROUTES[this.provider];
-        const targetPath = route.target_path.replace("{model}", this.model);
+        const targetPath = route.path.replace("{model}", this.model);
 
         let params: Record<string, unknown>;
 
@@ -393,9 +373,9 @@ export class ChatAiGateway extends BaseChatModel {
             workload_id: workloadId ?? "",
             ingress_mode: "explicit_action_request",
             action: {
-                type: "llm_chat",
+                type: "ai.infer",
                 method: "POST",
-                target_host: route.target_host,
+                target_host: route.host,
                 target_path: targetPath,
                 params,
             },

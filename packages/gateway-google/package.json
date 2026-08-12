@@ -1,6 +1,6 @@
 {
   "name": "@axemere/gateway-google",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "Axemere AI Gateway SDK — Google Generative AI wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

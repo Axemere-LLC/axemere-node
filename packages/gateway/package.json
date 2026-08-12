@@ -1,6 +1,6 @@
 {
   "name": "@axemere/gateway",
-  "version": "0.1.10",
+  "version": "0.2.0",
   "description": "Axemere AI Gateway SDK — core client, config, and proxy URL builder",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

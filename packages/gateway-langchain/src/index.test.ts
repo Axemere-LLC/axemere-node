@@ -1,4 +1,4 @@
-import { AiGatewayConfig } from "@axemere/gateway";
+import { AiGatewayConfig, PROVIDER_ROUTES } from "@axemere/gateway";
 import { ChatAiGateway, aiGatewayOpenAIClient, aiGatewayAnthropicClient } from "./index";
 
 describe("ChatAiGateway — construction", () => {
@@ -38,17 +38,18 @@ describe("ChatAiGateway — construction", () => {
         expect(llm._llmType()).toBe("axemere-gateway");
     });
 
-    it("supports all documented providers", () => {
-        const providers = [
-            "openai", "anthropic", "mistral", "google",
-            "xai", "deepseek", "groq", "together",
-            "fireworks", "perplexity", "openrouter", "cohere",
-        ];
-        for (const provider of providers) {
+    it("supports every provider in the shared routing table", () => {
+        for (const provider of Object.keys(PROVIDER_ROUTES)) {
             expect(
                 () => new ChatAiGateway({ provider, model: "some-model" }),
             ).not.toThrow();
         }
+    });
+
+    it("supports the google alias for gemini", () => {
+        expect(
+            () => new ChatAiGateway({ provider: "google", model: "some-model" }),
+        ).not.toThrow();
     });
 });
 
