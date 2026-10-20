@@ -5,15 +5,26 @@ on:
     tags:
       - "v*"
 
+# Required for npm's OIDC trusted publishing: lets this workflow request a
+# short-lived GitHub OIDC token, which npm exchanges for registry auth. No
+# NPM_TOKEN secret needed (or used) below -- see each publish step's note.
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      # "latest", not a pinned major, deliberately -- OIDC trusted
+      # publishing needs a recent-enough pnpm, and pinning an exact
+      # version here means tracking the minimum ourselves and this
+      # silently regressing back to needing NPM_TOKEN if we get it wrong.
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: latest
 
       - uses: actions/setup-node@v4
         with:
@@ -29,27 +40,31 @@ jobs:
       # jest as an (unrecognized) CLI flag instead of consuming it itself.
       - run: pnpm -r --if-present test
 
+      # Deliberately still `pnpm publish`, not `npm publish`: every
+      # wrapper package depends on @axemere/gateway via the pnpm
+      # `workspace:*` protocol, and pnpm publish is what rewrites that to
+      # a real semver range in the published tarball's package.json --
+      # plain npm has no idea what "workspace:*" means and would publish
+      # that literal (broken) string as the dependency version.
+      #
+      # No NODE_AUTH_TOKEN/NPM_TOKEN here any more: with id-token: write
+      # above and a recent-enough pnpm, pnpm auto-detects the GitHub
+      # Actions OIDC context and authenticates to npm via trusted
+      # publishing instead. This requires a Trusted Publisher configured
+      # on npmjs.com for Axemere-LLC/axemere-node + this workflow file,
+      # once per package -- that's a npmjs.com web UI step, not something
+      # this workflow file can do on its own.
       - name: Publish @axemere/gateway
         run: pnpm publish --filter @axemere/gateway --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @axemere/gateway-openai
         run: pnpm publish --filter @axemere/gateway-openai --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @axemere/gateway-anthropic
         run: pnpm publish --filter @axemere/gateway-anthropic --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @axemere/gateway-google
         run: pnpm publish --filter @axemere/gateway-google --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @axemere/gateway-langchain
         run: pnpm publish --filter @axemere/gateway-langchain --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
