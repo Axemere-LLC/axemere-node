@@ -8,6 +8,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Fixed
+- `@axemere/gateway-openai` and `@axemere/gateway-anthropic` no longer bundle `openai` /
+  `@anthropic-ai/sdk` as hard dependencies, which could install a second, conflicting copy
+  of either package (and a TypeScript type mismatch) for consumers who already depend on
+  a different major version directly.
+
+---
+
+## [0.2.0] - 2026-08-12
+
+### Fixed
 - Requests to `minimax` no longer fail — its upstream host and path were incorrect (`api.minimax.chat` + legacy native path → `api.minimax.io` + `/v1/chat/completions`).
 - `@axemere/gateway-langchain` no longer maintains its own drifted copy of the provider routing table; it now shares `@axemere/gateway`'s table, so both packages route identically.
 
@@ -68,7 +78,8 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 - `@axemere/gateway-openai`: unit tests now correctly isolate against live `AXEMERE_*` environment variables so the suite passes whether or not real credentials are present.
 - `@axemere/gateway-anthropic`: same test environment isolation fix as `gateway-openai`.
 
-[Unreleased]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.10...HEAD
+[Unreleased]: https://github.com/Axemere-LLC/axemere-node/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.10...v0.2.0
 [0.1.10]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/Axemere-LLC/axemere-node/compare/v0.1.7...v0.1.8

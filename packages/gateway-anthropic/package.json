@@ -1,6 +1,6 @@
 {
   "name": "@axemere/gateway-anthropic",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Axemere AI Gateway SDK — Anthropic drop-in wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,11 +21,14 @@
     "build": "tsc",
     "test": "jest"
   },
+  "peerDependencies": {
+    "@anthropic-ai/sdk": ">=0.30.0"
+  },
   "dependencies": {
-    "@axemere/gateway": "workspace:*",
-    "@anthropic-ai/sdk": "^0.36.0"
+    "@axemere/gateway": "workspace:*"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.36.0",
     "typescript": "^5.4.0",
     "@types/node": "^20.0.0",
     "@types/jest": "^29.0.0",
